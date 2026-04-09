@@ -11,6 +11,9 @@ logging.basicConfig(
 
 TOKEN = os.environ.get("BOT_TOKEN")
 
+if not TOKEN:
+    raise ValueError("BOT_TOKEN environment variable is not set!")
+
 WELCOME_TEXT = (
     "👋 *Welcome to Euro Community Entry*\n\n"
     "This bot provides a secure gateway to our private trading insights channel. "
@@ -65,4 +68,38 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callbac
+    query = update.callback_query
+    await query.answer()
+
+    if query.data == "entry_rules":
+        await query.edit_message_text(
+            ENTRY_RULES_TEXT,
+            parse_mode="Markdown",
+            reply_markup=back_menu()
+        )
+    elif query.data == "market_analysis":
+        await query.edit_message_text(
+            MARKET_ANALYSIS_TEXT,
+            parse_mode="Markdown",
+            reply_markup=market_menu()
+        )
+    elif query.data == "back_to_menu":
+        await query.edit_message_text(
+            WELCOME_TEXT,
+            parse_mode="Markdown",
+            reply_markup=main_menu()
+        )
+
+async def main():
+    logging.info("Starting Euro Community Portal Bot...")
+    app = Application.builder().token(TOKEN).build()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CallbackQueryHandler(button_handler))
+    await app.initialize()
+    await app.start()
+    logging.info("Bot is running!")
+    await app.updater.start_polling()
+    await asyncio.Event().wait()
+
+if __name__ == "__main__":
+    asyncio.run(main())
