@@ -1,5 +1,6 @@
 import os
 import logging
+import asyncio
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 
@@ -64,33 +65,4 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-
-    if query.data == "entry_rules":
-        await query.edit_message_text(
-            ENTRY_RULES_TEXT,
-            parse_mode="Markdown",
-            reply_markup=back_menu()
-        )
-    elif query.data == "market_analysis":
-        await query.edit_message_text(
-            MARKET_ANALYSIS_TEXT,
-            parse_mode="Markdown",
-            reply_markup=market_menu()
-        )
-    elif query.data == "back_to_menu":
-        await query.edit_message_text(
-            WELCOME_TEXT,
-            parse_mode="Markdown",
-            reply_markup=main_menu()
-        )
-
-def main():
-    app = Application.builder().token(TOKEN).build()
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CallbackQueryHandler(button_handler))
-    app.run_polling()
-
-if __name__ == "__main__":
-    main()
+    query = update.callbac
